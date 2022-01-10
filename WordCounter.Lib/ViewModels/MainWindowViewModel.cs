@@ -1,8 +1,6 @@
 ﻿namespace WordCounter.Lib.ViewModels
 {
     using System;
-    using System.Collections.Generic;
-    using System.Text;
     using System.Windows.Input;
 
     public class MainWindowViewModel : ViewModelBase
@@ -13,7 +11,12 @@
         public bool StartButtonEnabled
         {
             get => _startButtonEnabled;
-            set => _startButtonEnabled = value;
+            set
+            {
+                _startButtonEnabled = value;
+                OnPropertyChanged(nameof(StartButtonEnabled));
+                OnPropertyChanged(nameof(CancelButtonEnabled));
+            }
         }
 
         public bool CancelButtonEnabled
@@ -24,7 +27,11 @@
         public string FilePath
         {
             get => _filePath;
-            set => _filePath = value;
+            set
+            {
+                _filePath = value;
+                OnPropertyChanged(nameof(FilePath));
+            }
         }
 
         public ICommand StartCommand { get; set; }

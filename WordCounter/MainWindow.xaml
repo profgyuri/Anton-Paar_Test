@@ -52,7 +52,7 @@
             x:Name="browseButton"
             Content="Browse"
             Grid.Column="2"
-            Click="browseButton_Click"/>
+            Click="BrowseButton_Click"/>
 
         <Button
             Grid.Row="1"
