@@ -1,12 +1,9 @@
 ﻿namespace WordCounter.Lib.ViewModels
 {
-    using System;
-    using System.Collections.Generic;
     using System.ComponentModel;
-using System.Runtime.CompilerServices;
-    using System.Text;
+    using System.Runtime.CompilerServices;
 
-    internal class ViewModelBase : INotifyPropertyChanged
+    public abstract class ViewModelBase : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 

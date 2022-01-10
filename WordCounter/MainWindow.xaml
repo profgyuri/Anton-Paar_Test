@@ -4,17 +4,24 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WordCounter"
+        xmlns:viewModels="clr-namespace:WordCounter.Lib.ViewModels;assembly=WordCounter.Lib"
         x:Name="window"
         mc:Ignorable="d"
         Background="Gray"
         Foreground="White"
-        FontSize="18"
-        Title="Word Counter" Height="300" Width="450">
+        FontSize="24"
+        Title="Word Counter"
+        Height="350" Width="450" MinWidth="420" MinHeight="250">
+
+    <Window.DataContext>
+        <viewModels:MainWindowViewModel/>
+    </Window.DataContext>
 
     <Window.Resources>
         <Style TargetType="Button">
             <Setter Property="Background" Value="{Binding ElementName=window, Path=Background}" />
             <Setter Property="Foreground" Value="{Binding ElementName=window, Path=Foreground}" />
+            <Setter Property="BorderBrush" Value="White" />
         </Style>
     </Window.Resources>
     
@@ -35,26 +42,65 @@
             Text="File path:"/>
         <TextBox
             Grid.Column="1"
-            Text="asdasd"
+            Text="{Binding FilePath}"
+            FontSize="16"
+            VerticalContentAlignment="Center"
             Margin="10 0"
             Background="{Binding ElementName=window, Path=Background}"
             Foreground="{Binding ElementName=window, Path=Foreground}"/>
         <Button
+            x:Name="browseButton"
             Content="Browse"
-            Grid.Column="2"/>
+            Grid.Column="2"
+            Click="browseButton_Click"/>
 
         <Button
             Grid.Row="1"
             Content="Start"
+            IsEnabled="{Binding StartButtonEnabled}"
+            Command="{Binding StartCommand}"
             Margin="0 10 0 0"/>
+        <ProgressBar
+            Grid.Row="1"
+            Grid.Column="1"
+            Background="White"
+            Margin="10 10 10 0"/>
         <Button
             Grid.Row="1"
             Grid.Column="2"
             Content="Cancel"
+            IsEnabled="{Binding CancelButtonEnabled}"
+            Command="{Binding CancelCommand}"
             Margin="0 10 0 0"/>
         <DataGrid
             Grid.Row="2"
-            Grid.Column="1"
-            Margin="10 10 10 0"/>
+            Grid.ColumnSpan="3"
+            Margin="0 10 0 0"
+            HeadersVisibility="Column"
+            BorderBrush="White"
+            Background="{Binding ElementName=window, Path=Background}">
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="HorizontalContentAlignment" Value="Center" />
+                    <Setter Property="FontSize" Value="22" />
+                    <Setter Property="Background" Value="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=Background}" />
+                    <Setter Property="Foreground" Value="White" />
+                    <Setter Property="BorderBrush" Value="White" />
+                    <Setter Property="BorderThickness" Value="1 1 1 2" />
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+            <DataGrid.Columns>
+                <DataGridTextColumn
+                    CanUserSort="False"
+                    Width="*"
+                    MinWidth="100"
+                    Header="Word"/>
+                <DataGridTextColumn
+                    CanUserSort="False"
+                    Width="Auto"
+                    MinWidth="80"
+                    Header="Count"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </Window>
