@@ -1,12 +1,13 @@
 ﻿namespace WordCounter.Lib.ViewModels
 {
-    using System;
     using System.Windows.Input;
+    using WordCounter.Lib.Processing;
 
     public class MainWindowViewModel : ViewModelBase
     {
         private bool _startButtonEnabled;
         private string _filePath;
+        private FileReader _fileReader;
 
         public bool StartButtonEnabled
         {
@@ -41,8 +42,17 @@
         {
             StartButtonEnabled = true;
 
-            StartCommand = new RelayCommand(() => throw new NotImplementedException());
-            CancelCommand = new RelayCommand(() => throw new NotImplementedException());
+            StartCommand = new RelayCommand(() =>
+            {
+                _startButtonEnabled = false;
+                _fileReader = new FileReader(_filePath);
+                _fileReader.StartWorker();
+            });
+            CancelCommand = new RelayCommand(() =>
+            {
+                _startButtonEnabled = true;
+                _fileReader?.CancelWorker();
+            });
         }
     }
 }
