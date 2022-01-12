@@ -63,8 +63,17 @@
         <ProgressBar
             Grid.Row="1"
             Grid.Column="1"
+            Value="{Binding ProgressPercentage}"
             Background="White"
             Margin="10 10 10 0"/>
+        <TextBlock
+            Grid.Row="1"
+            Grid.Column="1"
+            Foreground="Blue"
+            Margin="0 10 0 0"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Text="{Binding Status}"/>
         <Button
             Grid.Row="1"
             Grid.Column="2"

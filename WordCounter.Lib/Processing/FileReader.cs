@@ -1,9 +1,11 @@
 ﻿namespace WordCounter.Lib.Processing
 {
+    using System;
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.IO;
     using System.Text;
+    using WordCounter.Lib.Events;
 
     internal class FileReader
     {
@@ -11,6 +13,10 @@
         private readonly StringBuilder _stringBuilder;
         private readonly Dictionary<string, int> _dictionary;
         private readonly BackgroundWorker _backgroundWorker;
+        private int _previousProgressPercentage;
+
+        public WorkerFinishedEvent WorkFinished;
+        public WorkerProgressChangedEvent WorkProgressChanged;
 
         public FileReader(string path)
         {
@@ -18,6 +24,8 @@
             _stringBuilder = new StringBuilder();
             _dictionary = new Dictionary<string, int>();
             _backgroundWorker = new BackgroundWorker();
+            WorkProgressChanged = new WorkerProgressChangedEvent();
+            WorkFinished = new WorkerFinishedEvent();
 
             _backgroundWorker.WorkerReportsProgress = true;
             _backgroundWorker.WorkerSupportsCancellation = true;
@@ -38,18 +46,32 @@
         {
             if (_backgroundWorker != null && _backgroundWorker.IsBusy)
             {
-                _backgroundWorker.RunWorkerAsync();
+                _backgroundWorker.CancelAsync();
             }
         }
 
         private void ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
             var progress = e.ProgressPercentage;
+
+            WorkProgressChanged.OnWorkerProcessChanged(new WorkerProgressChangedEventArgs(progress));
+            _previousProgressPercentage = progress;
         }
 
         private void WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             var message = "Done!";
+
+            if (e.Cancelled)
+            {
+                message = "Process cancelled!";
+            }
+            else if (e.Error is Exception err)
+            {
+                throw err;
+            }
+
+            WorkFinished.OnWorkerFinished(new WorkerFinishedEventArgs(message));
         }
 
         private void ReadByBytes(object sender, DoWorkEventArgs e)
@@ -60,7 +82,7 @@
 
             var byteValue = reader.Peek();
 
-            while (byteValue >= 0)
+            while (byteValue >= 0 && !_backgroundWorker.CancellationPending)
             {
                 HandleCharacterFromByteValue(byteValue);
 
@@ -68,7 +90,16 @@
                 readBytes++;
 
                 var progressPercentage = (int)((double)readBytes / fileSize * 100);
-                _backgroundWorker.ReportProgress(progressPercentage);
+                if (progressPercentage != _previousProgressPercentage)
+                {
+                    _backgroundWorker.ReportProgress(progressPercentage);
+                    _previousProgressPercentage = progressPercentage;
+                }
+            }
+
+            if (_backgroundWorker.CancellationPending)
+            {
+                e.Cancel = true;
             }
         }
 
