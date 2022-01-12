@@ -40,15 +40,22 @@
         public string Status
         {
             get => _status;
-            set => _status = value;
+            set 
+            {
+                _status = value;
+                OnPropertyChanged(nameof(Status));
+            }
         }
 
         public int ProgressPercentage
         {
             get => _progressPercentage;
-            set => _progressPercentage = value;
+            set
+            {
+                _progressPercentage = value;
+                OnPropertyChanged(nameof(ProgressPercentage));
+            }
         }
-
 
         public ICommand StartCommand { get; set; }
         public ICommand CancelCommand { get; set; }
@@ -59,9 +66,7 @@
 
             StartCommand = new RelayCommand(() =>
             {
-                _startButtonEnabled = false;
-                OnPropertyChanged(nameof(StartButtonEnabled));
-                OnPropertyChanged(nameof(CancelButtonEnabled));
+                StartButtonEnabled = false;
                 _fileReader = new FileReader(_filePath);
                 _fileReader.WorkProgressChanged.WorkerProcessChanged += ProcessChanged;
                 _fileReader.WorkFinished.WorkerFinished += WorkerFinished;
@@ -69,9 +74,7 @@
             });
             CancelCommand = new RelayCommand(() =>
             {
-                _startButtonEnabled = true;
-                OnPropertyChanged(nameof(StartButtonEnabled));
-                OnPropertyChanged(nameof(CancelButtonEnabled));
+                StartButtonEnabled = true;
                 _fileReader?.CancelWorker();
             });
         }
@@ -79,10 +82,7 @@
         private void WorkerFinished(object o, Events.WorkerFinishedEventArgs e)
         {
             Status = e.Message;
-            OnPropertyChanged(nameof(Status));
             StartButtonEnabled = true;
-            OnPropertyChanged(nameof(StartButtonEnabled));
-            OnPropertyChanged(nameof(CancelButtonEnabled));
             DescribeEvents();
         }
 
@@ -90,8 +90,6 @@
         {
             Status = string.Format("{0}%", e.Progress);
             ProgressPercentage = e.Progress;
-            OnPropertyChanged(nameof(Status));
-            OnPropertyChanged(nameof(ProgressPercentage));
         }
 
         private void DescribeEvents()
