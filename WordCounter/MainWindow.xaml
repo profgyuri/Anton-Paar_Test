@@ -36,7 +36,7 @@
                                 VerticalAlignment="Stretch"
                                 Stroke="{TemplateBinding Foreground}"
                                 StrokeThickness="1"
-                                Fill="Transparent"/>
+                                Fill="{TemplateBinding Background}"/>
                             <DockPanel
                                 Name="myContentPresenterDockPanel">
                                 <ContentPresenter
@@ -59,6 +59,12 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="{StaticResource ForegroundColorBrush}" />
+                    <Setter Property="Foreground" Value="{StaticResource BackgroundColorBrush}" />
+                </Trigger>
+            </Style.Triggers>
         </Style>
         <Style x:Key="CenteredCellStyle" TargetType="{x:Type DataGridCell}">
             <Setter Property="Template">
