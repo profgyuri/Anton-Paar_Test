@@ -8,13 +8,14 @@
     using System.Text;
     using WordCounter.Lib.Events;
 
-    internal class FileReader
+    internal class FileReader : IDisposable
     {
         private readonly string _path;
         private readonly StringBuilder _stringBuilder;
         private readonly Dictionary<string, int> _dictionary;
         private readonly BackgroundWorker _backgroundWorker;
         private int _previousProgressPercentage;
+        private string _error;
 
         public WorkerFinishedEvent WorkFinishedEvent;
         public WorkerProgressChangedEvent WorkProgressChangedEvent;
@@ -39,7 +40,7 @@
         {
             if (_backgroundWorker != null && !_backgroundWorker.IsBusy)
             {
-                _backgroundWorker?.RunWorkerAsync();
+                _backgroundWorker.RunWorkerAsync();
             }
         }
 
@@ -65,13 +66,13 @@
             string message = "Done!";
             ObservableCollection<KeyValuePair<string, int>> list = null;
 
-            if (e.Cancelled)
+            if (!string.IsNullOrEmpty(_error))
+            {
+                message = _error;
+            }
+            else if (e.Cancelled)
             {
                 message = "Process cancelled!";
-            }
-            else if (e.Error is Exception err)
-            {
-                throw err;
             }
             else
             {
@@ -85,7 +86,13 @@
 
         private void ReadByBytes(object sender, DoWorkEventArgs e)
         {
+            if (!PathIsValid())
+            {
+                return;
+            }
+
             using var reader = new StreamReader(_path);
+
             long fileSize = reader.BaseStream.Length;
             int readBytes = 0;
 
@@ -110,6 +117,32 @@
             {
                 e.Cancel = true;
             }
+        }
+
+        private bool PathIsValid()
+        {
+            _error = "";
+
+            if (string.IsNullOrEmpty(_path))
+            {
+                _error = "No path given!";
+                return false;
+            }
+
+            if (!File.Exists(_path))
+            {
+                _error = "File cannot be found!";
+                return false;
+            }
+
+            var info = new FileInfo(_path);
+            if (info.Length == 0)
+            {
+                _error = "The file is empty!";
+                return false;
+            }
+
+            return true;
         }
         #endregion
 
@@ -148,6 +181,13 @@
             }
 
             _dictionary[word]++;
+        }
+
+        public void Dispose()
+        {
+            _backgroundWorker.DoWork -= ReadByBytes;
+            _backgroundWorker.RunWorkerCompleted -= WorkerCompleted;
+            _backgroundWorker.ProgressChanged -= ProgressChanged;
         }
         #endregion
     }

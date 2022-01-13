@@ -3,6 +3,7 @@
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Windows.Input;
+    using WordCounter.Lib.Events;
     using WordCounter.Lib.Processing;
 
     public class MainWindowViewModel : ViewModelBase
@@ -94,15 +95,16 @@
             });
         }
 
-        private void WorkerFinished(object o, Events.WorkerFinishedEventArgs e)
+        private void WorkerFinished(object o, WorkerFinishedEventArgs e)
         {
             Status = e.Message;
             SortedList = e.OrderedList;
             StartButtonEnabled = true;
             DescribeEvents();
+            _fileReader.Dispose();
         }
 
-        private void ProcessChanged(object o, Events.WorkerProgressChangedEventArgs e)
+        private void ProcessChanged(object o, WorkerProgressChangedEventArgs e)
         {
             Status = string.Format("{0}%", e.Progress);
             ProgressPercentage = e.Progress;
