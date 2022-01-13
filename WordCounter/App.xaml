@@ -4,6 +4,12 @@
              xmlns:local="clr-namespace:WordCounter"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <Color x:Key="PrimaryLight">#F0F0F2</Color>
+        <Color x:Key="PrimaryMediumLight">#D2D2D9</Color>
+        <Color x:Key="PrimaryMedium">#3a3a3b</Color>
+        <Color x:Key="PrimaryDark">#252526</Color>
+        <SolidColorBrush x:Key="BackgroundColorBrush" Color="{StaticResource PrimaryDark}"/>
+        <SolidColorBrush x:Key="ForegroundColorBrush" Color="{StaticResource PrimaryLight}"/>
+        <SolidColorBrush x:Key="MediumBackgroundColorBrush" Color="{StaticResource PrimaryMedium}"/>
     </Application.Resources>
 </Application>

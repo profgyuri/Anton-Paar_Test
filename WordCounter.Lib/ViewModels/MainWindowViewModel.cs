@@ -14,6 +14,7 @@
         private int _progressPercentage;
         private ObservableCollection<KeyValuePair<string, int>> _sortedList;
 
+        #region Public Properties
         public bool StartButtonEnabled
         {
             get => _startButtonEnabled;
@@ -69,7 +70,7 @@
                 OnPropertyChanged(nameof(SortedList));
             }
         }
-
+        #endregion
 
         public ICommand StartCommand { get; set; }
         public ICommand CancelCommand { get; set; }
@@ -82,8 +83,8 @@
             {
                 StartButtonEnabled = false;
                 _fileReader = new FileReader(_filePath);
-                _fileReader.WorkProgressChanged.WorkerProcessChanged += ProcessChanged;
-                _fileReader.WorkFinished.WorkerFinished += WorkerFinished;
+                _fileReader.WorkProgressChangedEvent.WorkerProcessChanged += ProcessChanged;
+                _fileReader.WorkFinishedEvent.WorkerFinished += WorkerFinished;
                 _fileReader.StartWorker();
             });
             CancelCommand = new RelayCommand(() =>
@@ -109,8 +110,8 @@
 
         private void DescribeEvents()
         {
-            _fileReader.WorkProgressChanged.WorkerProcessChanged -= ProcessChanged;
-            _fileReader.WorkFinished.WorkerFinished -= WorkerFinished;
+            _fileReader.WorkProgressChangedEvent.WorkerProcessChanged -= ProcessChanged;
+            _fileReader.WorkFinishedEvent.WorkerFinished -= WorkerFinished;
         }
     }
 }
