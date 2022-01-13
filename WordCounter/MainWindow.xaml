@@ -89,7 +89,11 @@
         <TextBlock
             Text="File path:"/>
         <TextBox
+            x:Name="PathTextBox"
             Grid.Column="1"
+            AllowDrop="True"
+            PreviewDragOver="PathTextBox_PreviewDragOver"
+            Drop="PathTextBox_Drop"
             Text="{Binding FilePath}"
             FontSize="16"
             VerticalContentAlignment="Center"
