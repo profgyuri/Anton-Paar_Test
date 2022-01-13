@@ -2,9 +2,11 @@
 {
     using System;
     using System.Collections.Generic;
+using System.Collections.ObjectModel;
     using System.ComponentModel;
     using System.IO;
     using System.Text;
+    using System.Threading.Tasks;
     using WordCounter.Lib.Events;
 
     internal class FileReader
@@ -61,6 +63,7 @@
         private void WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             var message = "Done!";
+            ObservableCollection<KeyValuePair<string, int>> list = null;
 
             if (e.Cancelled)
             {
@@ -70,8 +73,13 @@
             {
                 throw err;
             }
+            else
+            {
+                var sorted = Sorter.Sort(_dictionary);
+                list = new ObservableCollection<KeyValuePair<string,int>>(sorted);
+            }
 
-            WorkFinished.OnWorkerFinished(new WorkerFinishedEventArgs(message));
+            WorkFinished.OnWorkerFinished(new WorkerFinishedEventArgs(message, list));
         }
 
         private void ReadByBytes(object sender, DoWorkEventArgs e)
@@ -84,9 +92,9 @@
 
             while (byteValue >= 0 && !_backgroundWorker.CancellationPending)
             {
+                byteValue = reader.Read();
                 HandleCharacterFromByteValue(byteValue);
 
-                byteValue = reader.Read();
                 readBytes++;
 
                 var progressPercentage = (int)((double)readBytes / fileSize * 100);
@@ -134,6 +142,10 @@
             if (!_dictionary.ContainsKey(word))
             {
                 _dictionary[word] = 0;
+                if (word == "TThe")
+                {
+                    Task.Delay(1);
+                }
             }
 
             _dictionary[word]++;

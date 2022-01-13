@@ -1,5 +1,7 @@
 ﻿namespace WordCounter.Lib.ViewModels
 {
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Windows.Input;
     using WordCounter.Lib.Processing;
 
@@ -10,6 +12,7 @@
         private FileReader _fileReader;
         private string _status;
         private int _progressPercentage;
+        private ObservableCollection<KeyValuePair<string, int>> _sortedList;
 
         public bool StartButtonEnabled
         {
@@ -57,6 +60,17 @@
             }
         }
 
+        public ObservableCollection<KeyValuePair<string, int>> SortedList
+        {
+            get => _sortedList;
+            set
+            {
+                _sortedList = value;
+                OnPropertyChanged(nameof(SortedList));
+            }
+        }
+
+
         public ICommand StartCommand { get; set; }
         public ICommand CancelCommand { get; set; }
 
@@ -82,6 +96,7 @@
         private void WorkerFinished(object o, Events.WorkerFinishedEventArgs e)
         {
             Status = e.Message;
+            SortedList = e.OrderedList;
             StartButtonEnabled = true;
             DescribeEvents();
         }
