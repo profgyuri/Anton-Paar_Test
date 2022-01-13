@@ -26,34 +26,28 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
-                        <Grid
+                        <Border
+                            x:Name="border"
                             Width="{TemplateBinding Width}"
                             Height="{TemplateBinding Height}"
-                            ClipToBounds="True">
-                            <Rectangle
-                                x:Name="rect"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Stretch"
-                                Stroke="{TemplateBinding Foreground}"
-                                StrokeThickness="1"
-                                Fill="{TemplateBinding Background}"/>
-                            <DockPanel
-                                Name="myContentPresenterDockPanel">
-                                <ContentPresenter
-                                    x:Name="myContentPresenter"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Background="{TemplateBinding Background}"
+                            ClipToBounds="{TemplateBinding ClipToBounds}"
+                            CornerRadius="2">
+                            <ContentPresenter
                                     Margin="0 5"
                                     VerticalAlignment="Center"
                                     HorizontalAlignment="Center"
                                     Content="{TemplateBinding  Content}"
                                     TextBlock.Foreground="{TemplateBinding Foreground}" />
-                            </DockPanel>
-                        </Grid>
+                        </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="rect" Property="Fill" Value="#39393a"/>
+                                <Setter TargetName="border" Property="Background" Value="#39393a"/>
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="rect" Property="Fill" Value="#454550"/>
+                                <Setter TargetName="border" Property="Background" Value="#454550"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
