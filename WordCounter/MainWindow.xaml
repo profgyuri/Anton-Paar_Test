@@ -87,11 +87,12 @@
         </Grid.RowDefinitions>
 
         <TextBlock
-            Text="File path:"/>
+            Text="File path:"
+            AutomationProperties.Name="Press tab once to type the path to the file or twice to browse instead"/>
         <TextBox
-            x:Name="PathTextBox"
             Grid.Column="1"
             AllowDrop="True"
+            IsTabStop="False"
             PreviewDragOver="PathTextBox_PreviewDragOver"
             Drop="PathTextBox_Drop"
             Text="{Binding FilePath}"
@@ -102,6 +103,7 @@
             Foreground="{StaticResource ForegroundColorBrush}"/>
         <Button
             x:Name="browseButton"
+            AutomationProperties.Name="Open file browser"
             Content="Browse"
             Grid.Column="2"
             Click="BrowseButton_Click"/>
@@ -109,6 +111,7 @@
         <Button
             Grid.Row="1"
             Content="Start"
+            AutomationProperties.Name="Start analyzing the file"
             IsEnabled="{Binding StartButtonEnabled}"
             Command="{Binding StartCommand}"
             Margin="0 10 0 0"/>
@@ -130,6 +133,7 @@
         <Button
             Grid.Row="1"
             Grid.Column="2"
+            AutomationProperties.Name="Cancel the processing of the file"
             Content="Cancel"
             IsEnabled="{Binding CancelButtonEnabled}"
             Command="{Binding CancelCommand}"
@@ -137,6 +141,8 @@
         <DataGrid
             Grid.Row="2"
             Grid.ColumnSpan="3"
+            IsTabStop="True"
+            AutomationProperties.Name="{Binding AccessibilityResultText}"
             Margin="0 10 0 0"
             HeadersVisibility="Column"
             VerticalScrollBarVisibility="Auto"
@@ -189,6 +195,11 @@
                     </DataGridTextColumn.ElementStyle>
                 </DataGridTextColumn>
             </DataGrid.Columns>
+            <DataGrid.CellStyle>
+                <Style TargetType="{x:Type DataGridCell}">
+                    <Setter Property="KeyboardNavigation.IsTabStop" Value="False" />
+                </Style>
+            </DataGrid.CellStyle>
         </DataGrid>
     </Grid>
 </Window>

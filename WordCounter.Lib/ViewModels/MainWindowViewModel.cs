@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Linq;
     using System.Windows.Input;
     using WordCounter.Lib.Events;
     using WordCounter.Lib.Processing;
@@ -69,7 +70,13 @@
             {
                 _sortedList = value;
                 OnPropertyChanged(nameof(SortedList));
+                OnPropertyChanged(nameof(AccessibilityResultText));
             }
+        }
+
+        public string AccessibilityResultText 
+        {
+            get => SortedList != null && SortedList.Any() ? $"Out of {SortedList.Count} words, the most common word is {SortedList[0].Key} which occured in the file {SortedList[0].Value} times" : "";
         }
         #endregion
 
