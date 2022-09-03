@@ -8,7 +8,7 @@
     using System.Text;
     using WordCounter.Lib.Events;
 
-    internal class FileReader : IDisposable
+    internal sealed class FileReader : IDisposable
     {
         private readonly string _path;
         private readonly StringBuilder _stringBuilder;
@@ -17,8 +17,8 @@
         private int _previousProgressPercentage;
         private string _error;
 
-        public WorkerFinishedEvent WorkFinishedEvent;
-        public WorkerProgressChangedEvent WorkProgressChangedEvent;
+        public readonly WorkerFinishedEvent _workerFinishedEvent;
+        public readonly WorkerProgressChangedEvent _workerProgressChangedEvent;
 
         public FileReader(string path)
         {
@@ -26,8 +26,8 @@
             _stringBuilder = new StringBuilder();
             _dictionary = new Dictionary<string, int>();
             _backgroundWorker = new BackgroundWorker();
-            WorkProgressChangedEvent = new WorkerProgressChangedEvent();
-            WorkFinishedEvent = new WorkerFinishedEvent();
+            _workerProgressChangedEvent = new WorkerProgressChangedEvent();
+            _workerFinishedEvent = new WorkerFinishedEvent();
 
             _backgroundWorker.WorkerReportsProgress = true;
             _backgroundWorker.WorkerSupportsCancellation = true;
@@ -46,7 +46,7 @@
 
         public void CancelWorker()
         {
-            if (_backgroundWorker != null && _backgroundWorker.IsBusy)
+            if (_backgroundWorker is {IsBusy: true})
             {
                 _backgroundWorker.CancelAsync();
             }
@@ -55,15 +55,15 @@
         #region BackgroundWorker Events
         private void ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            int progress = e.ProgressPercentage;
+            var progress = e.ProgressPercentage;
 
-            WorkProgressChangedEvent.OnWorkerProcessChanged(new WorkerProgressChangedEventArgs(progress));
+            _workerProgressChangedEvent.OnWorkerProcessChanged(new WorkerProgressChangedEventArgs(progress));
             _previousProgressPercentage = progress;
         }
 
         private void WorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            string message = "Done!";
+            var message = "Done!";
             ObservableCollection<KeyValuePair<string, int>> list = null;
 
             if (!string.IsNullOrEmpty(_error))
@@ -78,10 +78,10 @@
             {
                 var sorted = Sorter.Sort(_dictionary);
                 list = new ObservableCollection<KeyValuePair<string, int>>(sorted);
-                WorkProgressChangedEvent.OnWorkerProcessChanged(new WorkerProgressChangedEventArgs(100));
+                _workerProgressChangedEvent.OnWorkerProcessChanged(new WorkerProgressChangedEventArgs(100));
             }
 
-            WorkFinishedEvent.OnWorkerFinished(new WorkerFinishedEventArgs(message, list));
+            _workerFinishedEvent.OnWorkerFinished(new WorkerFinishedEventArgs(message, list));
         }
 
         private void ReadByBytes(object sender, DoWorkEventArgs e)
@@ -93,10 +93,10 @@
 
             using var reader = new StreamReader(_path);
 
-            long fileSize = reader.BaseStream.Length;
-            int readBytes = 0;
+            var fileSize = reader.BaseStream.Length;
+            long readBytes = 0;
 
-            int byteValue = reader.Peek();
+            var byteValue = reader.Peek();
 
             while (byteValue >= 0 && !_backgroundWorker.CancellationPending)
             {
@@ -105,12 +105,14 @@
 
                 readBytes++;
 
-                int progressPercentage = (int)((double)readBytes / fileSize * 100);
-                if (progressPercentage != _previousProgressPercentage)
+                var progressPercentage = (int)((double)readBytes / fileSize * 100);
+                if (progressPercentage == _previousProgressPercentage)
                 {
-                    _backgroundWorker.ReportProgress(progressPercentage);
-                    _previousProgressPercentage = progressPercentage;
+                    continue;
                 }
+
+                _backgroundWorker.ReportProgress(progressPercentage);
+                _previousProgressPercentage = progressPercentage;
             }
 
             if (_backgroundWorker.CancellationPending)
@@ -136,20 +138,21 @@
             }
 
             var info = new FileInfo(_path);
-            if (info.Length == 0)
+            if (info.Length != 0)
             {
-                _error = "The file is empty!";
-                return false;
+                return true;
             }
 
-            return true;
+            _error = "The file is empty!";
+            return false;
+
         }
         #endregion
 
         #region BackgroundWorker Helpers
         private void HandleCharacterFromByteValue(int byteValue)
         {
-            char character = (char)byteValue;
+            var character = (char)byteValue;
 
             if (char.IsWhiteSpace(character))
             {
@@ -163,14 +166,16 @@
 
         private void AddNewWordIfNotEmpty()
         {
-            if (_stringBuilder.Length > 0)
+            if (_stringBuilder.Length <= 0)
             {
-                string word = _stringBuilder.ToString();
-
-                AddOrIncreaseWordOccurance(word);
-
-                _stringBuilder.Clear();
+                return;
             }
+
+            var word = _stringBuilder.ToString();
+
+            AddOrIncreaseWordOccurance(word);
+
+            _stringBuilder.Clear();
         }
 
         private void AddOrIncreaseWordOccurance(string word)

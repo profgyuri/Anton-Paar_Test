@@ -80,8 +80,8 @@
         }
         #endregion
 
-        public ICommand StartCommand { get; set; }
-        public ICommand CancelCommand { get; set; }
+        public ICommand StartCommand { get; }
+        public ICommand CancelCommand { get; }
 
         public MainWindowViewModel()
         {
@@ -91,8 +91,8 @@
             {
                 StartButtonEnabled = false;
                 _fileReader = new FileReader(_filePath);
-                _fileReader.WorkProgressChangedEvent.WorkerProcessChanged += ProcessChanged;
-                _fileReader.WorkFinishedEvent.WorkerFinished += WorkerFinished;
+                _fileReader._workerProgressChangedEvent.WorkerProcessChanged += ProcessChanged;
+                _fileReader._workerFinishedEvent.WorkerFinished += WorkerFinished;
                 _fileReader.StartWorker();
             });
             CancelCommand = new RelayCommand(() =>
@@ -113,14 +113,14 @@
 
         private void ProcessChanged(object o, WorkerProgressChangedEventArgs e)
         {
-            Status = string.Format("{0}%", e.Progress);
+            Status = $"{e.Progress}%";
             ProgressPercentage = e.Progress;
         }
 
         private void DescribeEvents()
         {
-            _fileReader.WorkProgressChangedEvent.WorkerProcessChanged -= ProcessChanged;
-            _fileReader.WorkFinishedEvent.WorkerFinished -= WorkerFinished;
+            _fileReader._workerProgressChangedEvent.WorkerProcessChanged -= ProcessChanged;
+            _fileReader._workerFinishedEvent.WorkerFinished -= WorkerFinished;
         }
     }
 }
