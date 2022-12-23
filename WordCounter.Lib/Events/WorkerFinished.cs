@@ -5,7 +5,7 @@
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
 
-    public class WorkerFinishedEventArgs : EventArgs
+    public sealed class WorkerFinishedEventArgs : EventArgs
     {
         public string Message { get; set; }
         public ObservableCollection<KeyValuePair<string, int>> OrderedList { get; set; }

@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class WorkerProgressChangedEventArgs : EventArgs
+    public sealed class WorkerProgressChangedEventArgs : EventArgs
     {
         public int Progress { get; set; }
 

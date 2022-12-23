@@ -7,7 +7,7 @@
     using WordCounter.Lib.Events;
     using WordCounter.Lib.Processing;
 
-    public class MainWindowViewModel : ViewModelBase
+    public sealed class MainWindowViewModel : ViewModelBase
     {
         private bool _startButtonEnabled;
         private string _filePath;
