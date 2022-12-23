@@ -107,7 +107,7 @@
             Status = e.Message;
             SortedList = e.OrderedList;
             StartButtonEnabled = true;
-            DescribeEvents();
+            UnsubscribeEvents();
             _fileReader.Dispose();
         }
 
@@ -117,7 +117,7 @@
             ProgressPercentage = e.Progress;
         }
 
-        private void DescribeEvents()
+        private void UnsubscribeEvents()
         {
             _fileReader._workerProgressChangedEvent.WorkerProcessChanged -= ProcessChanged;
             _fileReader._workerFinishedEvent.WorkerFinished -= WorkerFinished;
