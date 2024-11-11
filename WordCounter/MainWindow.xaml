@@ -112,6 +112,8 @@
             Grid.Row="1"
             Content="Start"
             AutomationProperties.Name="Start analyzing the file"
+            AutomationProperties.ItemType="Button"
+            AutomationProperties.AutomationId="StartButton"
             IsEnabled="{Binding StartButtonEnabled}"
             Command="{Binding StartCommand}"
             Margin="0 10 0 0"/>
